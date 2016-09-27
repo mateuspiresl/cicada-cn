@@ -22,37 +22,45 @@ def sumMatrixRow(matrix, row, value):
 def sumMatrixCol(matrix, col, value):
 	matrix[col] = [matrix[i][col] + value for i in xrange(len(matrix))]
 
-def multMatrixs(matA, matB):
+def multMatrix(matA, matB):
 	size = len(matA)
-	result = [[0] * size] * size
+	result = [[0] * size for i in xrange(size)]
 
-	for i in range(size):
+	for i in xrange(size):
 		aRow = matA[i]
 
-		for j in range(size):
+		for j in xrange(size):
 			bCol = [matB[row][j] for row in xrange(size)]
 			result[i][j] = vectorSum(multVectors(aRow, bCol))
 
 	return result
 
 
-n = int(raw_input())
+print "Linear Advanced"
+
+n = int(raw_input("N: "))
 matrix = [0] * n
 
 for i in xrange(n):
  	matrix[i] = [float(x) for x in raw_input().split()]
 
+print "Matrix:"
 print matrix
+print ""
 
 for i in xrange(n):
-	auxRow = [0] * i + [- 1 / matrix[i][i]] + [0] * (n - i - 1)
-	aux = [[0] * n] * i + [auxRow] * (n - i)
-	print 'aux'
+	firstRows = [[0] * j + [1] + [0] * (n - j - 1) for j in xrange(i)]
+	mainRow = [0] * i + [1 / matrix[i][i]] + [0] * (n - i - 1)
+	lastRows = [[0] * i + [- matrix[j][i] / matrix[i][i]] + [0] * (j - i - 1) + [1] + [0] * (n - j - 1) for j in xrange(i + 1, n)]
+	aux = firstRows + [mainRow] + lastRows
+	print 'Aux:'
 	print aux
+	print ""
 
-	matrix = multMatrixs(matrix, aux)
-	print 'matrix'
+	matrix = multMatrix(aux, matrix)
+	print 'Matrix:'
 	print matrix
+	print ""
 	# print '\non ' + str(i)
 	# print matrix
 	
