@@ -5,14 +5,16 @@ def internProduct(vecA, vecB):
 	return result
 
 def matrixProduct(matA, matB):
-	size = len(matA)
-	result = [[0] * size for i in xrange(size)]
+	rows = len(matB)
+	cols = len(matB[0])
 
-	for i in xrange(size):
+	result = [[0] * cols for i in xrange(rows)]
+
+	for i in xrange(rows):
 		aRow = matA[i]
 
-		for j in xrange(size):
-			bCol = [matB[row][j] for row in xrange(size)]
+		for j in xrange(cols):
+			bCol = [matB[row][j] for row in xrange(rows)]
 			result[i][j] = internProduct(aRow, bCol)
 
 	return result
@@ -31,9 +33,9 @@ if __name__ == "__main__":
 	for i in xrange(n):
 	 	matrix[i] = [float(x) for x in raw_input().split()]
 
-	b = [float(x) for x in raw_input().split()]
-	print 'b: ' + str(b)
-	
+	#b = [float(x) for x in raw_input().split()]
+	#print 'b: ' + str(b)
+
 	auxs = []
 	result = matrix
 
@@ -49,33 +51,41 @@ if __name__ == "__main__":
 		aux = firstRows + [mainRow] + lastRows
 		auxs.append(aux)
 
+		#print '\nOP:'
+		#printMatrix(aux)
+		#print '*'
+		#printMatrix(result)
+
 		result = matrixProduct(aux, result)
+
+		#print '='
+		#printMatrix(result)
 
 	auxsMult = auxs[0]
 
 	for i in xrange(1, len(auxs)):
 		auxsMult = matrixProduct(auxs[i], auxsMult)
+	
+	print '\nCalculating vars:'
 
-	print '\n'
-
-	vec = [float(0)] * len(matrix)
+	vec = [float(0)] * len(result)
 	print 'vec: ' + str(vec) + '\n'
 
-	for i in xrange(len(matrix) - 1, -1, -1):
+	for i in xrange(len(result) - 1, -1, -1):
 		print 'Current: ' + str(i)
 
-		value = b[i]
+		value = result[i][len(result)]
 		print '\tvalue: ' + str(value)
 		
-		for j in xrange(i + 1, len(matrix)):
+		for j in xrange(i + 1, len(result)):
 			print '\t\tCalc for ' + str(j)
 			
-			value = value - (vec[j] * matrix[i][j])
+			value = value - (vec[j] * result[i][j])
 			print '\t\tvalue: ' + str(value)
 
-		vec[i] = value / matrix[i][i]
+		vec[i] = value / result[i][i]
 		print '\tvec[' + str(i) + ']: ' + str(vec[i])
-
+	
 
 
 	print "\n\nRESULT:"
@@ -87,3 +97,5 @@ if __name__ == "__main__":
 	printMatrix(auxsMult)
 	print "\nP x Matrix:"
 	printMatrix(matrixProduct(auxsMult, matrix))
+	print '\nVars:'
+	print vec
