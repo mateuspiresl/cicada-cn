@@ -66,25 +66,25 @@ if __name__ == "__main__":
 	for i in xrange(1, len(auxs)):
 		auxsMult = matrixProduct(auxs[i], auxsMult)
 	
-	print '\nCalculating vars:'
+	#print '\nCalculating vars:'
 
 	vec = [float(0)] * len(result)
-	print 'vec: ' + str(vec) + '\n'
+	#print 'vec: ' + str(vec) + '\n'
 
 	for i in xrange(len(result) - 1, -1, -1):
-		print 'Current: ' + str(i)
+		#print 'Current: ' + str(i)
 
 		value = result[i][len(result)]
-		print '\tvalue: ' + str(value)
+		#print '\tvalue: ' + str(value)
 		
 		for j in xrange(i + 1, len(result)):
-			print '\t\tCalc for ' + str(j)
+			#print '\t\tCalc for ' + str(j)
 			
 			value = value - (vec[j] * result[i][j])
-			print '\t\tvalue: ' + str(value)
+			#print '\t\tvalue: ' + str(value)
 
 		vec[i] = value / result[i][i]
-		print '\tvec[' + str(i) + ']: ' + str(vec[i])
+		#print '\tvec[' + str(i) + ']: ' + str(vec[i])
 	
 
 
