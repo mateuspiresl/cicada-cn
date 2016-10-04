@@ -43,7 +43,7 @@ if __name__ == "__main__":
 		# Builds first rows of identity matrix (if the first row is not the main row)
 		firstRows = [[0] * j + [1] + [0] * (n - j - 1) for j in xrange(i)]
 		# Builds working row, needed to turn main cell to 1
-		mainRow = [0] * i + [1 / result[i][i]] + [0] * (n - i - 1)
+		mainRow = [0] * i + [1] + [0] * (n - i - 1)
 		# Builds last rows of identity matrix, turns main cells to 0 and identity cells
 		#			first 0s   turns main col to 0				0s until identity	identity   last 0s
 		lastRows = [[0] * i +  [- result[j][i] / result[i][i]] + [0] * (j - i - 1) + [1] + 	   [0] * (n - j - 1) for j in xrange(i + 1, n)]
