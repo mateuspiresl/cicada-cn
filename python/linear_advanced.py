@@ -23,19 +23,7 @@ def printMatrix(matrix):
 	for i in xrange(len(matrix)):
 		print matrix[i]
 
-
-if __name__ == "__main__":
-	print "Linear-Advanced"
-
-	n = int(raw_input("N: "))
-	matrix = [0] * n
-
-	for i in xrange(n):
-	 	matrix[i] = [float(x) for x in raw_input().split()]
-
-	#b = [float(x) for x in raw_input().split()]
-	#print 'b: ' + str(b)
-
+def trangularization(matrix):
 	auxs = []
 	result = matrix
 
@@ -61,32 +49,48 @@ if __name__ == "__main__":
 		#print '='
 		#printMatrix(result)
 
+	return result, auxs
+
+def solveTriangularizedLinearSystem(matrix):
+	#print '\nCalculating vars:'
+
+	vec = [float(0)] * len(matrix)
+	#print 'vec: ' + str(vec) + '\n'
+
+	for i in xrange(len(matrix) - 1, -1, -1):
+		#print 'Current: ' + str(i)
+
+		value = matrix[i][len(matrix)]
+		#print '\tvalue: ' + str(value)
+		
+		for j in xrange(i + 1, len(matrix)):
+			#print '\t\tCalc for ' + str(j)
+			
+			value = value - (vec[j] * matrix[i][j])
+			#print '\t\tvalue: ' + str(value)
+
+		vec[i] = value / matrix[i][i]
+		#print '\tvec[' + str(i) + ']: ' + str(vec[i])
+
+	return vec
+
+
+if __name__ == "__main__":
+	print "Linear-Advanced"
+
+	n = int(raw_input("N: "))
+	matrix = [0] * n
+
+	for i in xrange(n):
+	 	matrix[i] = [float(x) for x in raw_input().split()]
+
+	result, auxs = trangularization(matrix)
 	auxsMult = auxs[0]
 
 	for i in xrange(1, len(auxs)):
 		auxsMult = matrixProduct(auxs[i], auxsMult)
 	
-	#print '\nCalculating vars:'
-
-	vec = [float(0)] * len(result)
-	#print 'vec: ' + str(vec) + '\n'
-
-	for i in xrange(len(result) - 1, -1, -1):
-		#print 'Current: ' + str(i)
-
-		value = result[i][len(result)]
-		#print '\tvalue: ' + str(value)
-		
-		for j in xrange(i + 1, len(result)):
-			#print '\t\tCalc for ' + str(j)
-			
-			value = value - (vec[j] * result[i][j])
-			#print '\t\tvalue: ' + str(value)
-
-		vec[i] = value / result[i][i]
-		#print '\tvec[' + str(i) + ']: ' + str(vec[i])
-	
-
+	vec = solveTriangularizedLinearSystem(result)
 
 	print "\n\nRESULT:"
 	print "\nMatrix:"
