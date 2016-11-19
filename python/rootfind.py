@@ -37,6 +37,8 @@ class root:
 
 	@staticmethod
 	def processFunc(func):
+		func = re.sub("sen", "sin", func)
+		func = re.sub("tan", "tg", func)
 		func = re.sub(r"\^", r"**", func)
 		func = re.sub(r"(cos|sin|tan|acos|asin|atan|log|exp|sqrt|pow|ln) \(", r"\1(", func)
 		func = re.sub(r"(cos|sin|tan|acos|asin|atan|log|exp|sqrt|pow|ln) ([\dx\+\-\*\/]+)", r"\1(\2)", func)
@@ -234,21 +236,25 @@ if __name__ == "__main__":
 		print "Use: func [maxIter(=40) [z(=0) [deriv [initialX] ] ]"
 	else:
 		print "\nFunction:"
-
 		func = sys.argv[1]
 		print "\t" + func
 
-		func = root.processFunc(func)
-		print "\t" + func
+		processedFunc = root.processFunc(func)
+		if func != processedFunc:
+			func = processedFunc
+			print "Processed:"
+			print "\t" + func
 
 		if len(sys.argv) > 4:
 			print "\nDerived:"
-
 			deriv = sys.argv[4]
 			print "\t" + deriv
 
-			deriv = root.processFunc(deriv)
-			print "\t" + deriv
+			processedFunc = root.processFunc(deriv)
+			if deriv != processedFunc:
+				deriv = processedFunc
+				print "Processed:"
+				print "\t" + deriv
 
 		if len(sys.argv) > 2: maxIter = eval(sys.argv[2])
 		else: maxIter = root.IterMax
