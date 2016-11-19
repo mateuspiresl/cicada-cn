@@ -27,3 +27,16 @@ if __name__ == "__main__":
 			divs[i].append(calc_div(dom, divs[i - 1], j, j + i))
 
 		print str(i) + 'o div: ' + str(divs[len(divs) - 1])
+
+	x = input()
+	result = 0
+
+	for i in xrange(size):
+		val = divs[i][0]
+
+		for j in xrange(i):
+			val = val * (x - dom[j])
+
+		result = result + val
+
+	print '\n' + str(x) + '  ->  ' + str(result)
