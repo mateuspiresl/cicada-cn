@@ -80,19 +80,9 @@ class Matrix:
 
 				result = Matrix.product(aux, result)
 
-		# elif triangularization == Matrix.Inferior:
-		# 	for i in xrange(n - 1, -1, -1):
-		# 		# Builds last rows of identity matrix, turns main cells to 0 and identity cells
-		# 		#			first 0s   turns main col to 0							0s until identity	identity   last 0s
-		# 		lastRows = [[0] * i +  [- result.data[j][i] / result.data[i][i]] + [0] * (j - i - 1) + [1] + 	   [0] * (n - j - 1) for j in xrange(i + 1, n)]
-		# 		# Builds first rows of identity matrix (if the first row is not the main row)
-		# 		firstRows = [[0] * (n - j - 1) + [1] + [0] * j for j in xrange(i + 1)]
-				
-		# 		aux = Matrix(firstRows + lastRows)
-		# 		auxs.append(aux)
-
-		# 		result = Matrix.product(aux, result)
-
+		elif triangularization == Matrix.Inferior:
+			pass
+		
 		else:
 			raise ArgumentException
 
@@ -103,25 +93,22 @@ class Matrix:
 		if self.triangularization == None:
 			raise Matrix.NotTriangularizedException;
 
-		#print '\nCalculating vars:'
-
 		vec = [float(0)] * len(self.data)
-		#print 'vec: ' + str(vec) + '\n'
 
-		for i in xrange(len(self.data) - 1, -1, -1):
-			#print 'Current: ' + str(i)
-
-			value = systemResult.data[i][0]
-			#print '\tvalue: ' + str(value)
-			
-			for j in xrange(i + 1, len(self.data)):
-				#print '\t\tCalc for ' + str(j)
+		if self.triangularization == Matrix.Superior:
+			for i in xrange(len(self.data) - 1, -1, -1):
+				value = systemResult.data[i][0]
 				
-				value -= vec[j] * self.data[i][j]
-				#print '\t\tvalue: ' + str(value)
+				for j in xrange(i + 1, len(self.data)):
+					value -= vec[j] * self.data[i][j]
+					
+				vec[i] = value / self.data[i][i]
 
-			vec[i] = value / self.data[i][i]
-			#print '\tvec[' + str(i) + ']: ' + str(vec[i])
+		elif self.triangularization == Matrix.Inferior:
+			pass
+
+		else:
+			raise Matrix.NotTriangularizedException
 
 		return vec
 
