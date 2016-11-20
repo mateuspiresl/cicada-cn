@@ -32,17 +32,24 @@ class Matrix:
 
 	@staticmethod
 	def product(matA, matB):
-		rows = len(matB.data)
-		cols = len(matB.data[0])
+		aRows = len(matA.data)
+		aCols = len(matA.data[0])
+		
+		bRows = len(matA.data)
+		bCols = len(matB.data[0])
+		
+		if aCols != bRows:
+			raise Exception('Matrix A columns (' + str(aCols) + ') must have the same length of matrix B rows (' + str(bRows) + ')')
 
-		result = [[0] * cols for i in xrange(rows)]
+		result = []
 
-		for i in xrange(rows):
+		for i in xrange(aRows):
 			aRow = matA.data[i]
+			result.append([])
 
-			for j in xrange(cols):
-				bCol = [matB.data[row][j] for row in xrange(rows)]
-				result[i][j] = Matrix.internProduct(aRow, bCol)
+			for j in xrange(bCols):
+				bCol = [matB.data[k][j] for k in xrange(bRows)]
+				result[i].append(Matrix.internProduct(aRow, bCol))
 
 		result = Matrix(result)
 
@@ -55,7 +62,7 @@ class Matrix:
 		for i in xrange(len(self.data)):
 			print tab + str(self.data[i])
 
-	def trangularize(self, triangularization):
+	def trangularize(self, triangularization = Superior):
 		auxs = []
 		result = self
 		n = len(self.data)
@@ -73,24 +80,26 @@ class Matrix:
 
 				result = Matrix.product(aux, result)
 
-		elif triangularization == Matrix.Inferior:
-			for i in xrange(n - 1, -1, -1):
-				# Builds last rows of identity matrix, turns main cells to 0 and identity cells
-				#			first 0s   turns main col to 0							0s until identity	identity   last 0s
-				lastRows = [[0] * i +  [- result.data[j][i] / result.data[i][i]] + [0] * (j - i - 1) + [1] + 	   [0] * (n - j - 1) for j in xrange(i + 1, n)]
-				# Builds first rows of identity matrix (if the first row is not the main row)
-				firstRows = [[0] * (n - j - 1) + [1] + [0] * j for j in xrange(i + 1)]
+		# elif triangularization == Matrix.Inferior:
+		# 	for i in xrange(n - 1, -1, -1):
+		# 		# Builds last rows of identity matrix, turns main cells to 0 and identity cells
+		# 		#			first 0s   turns main col to 0							0s until identity	identity   last 0s
+		# 		lastRows = [[0] * i +  [- result.data[j][i] / result.data[i][i]] + [0] * (j - i - 1) + [1] + 	   [0] * (n - j - 1) for j in xrange(i + 1, n)]
+		# 		# Builds first rows of identity matrix (if the first row is not the main row)
+		# 		firstRows = [[0] * (n - j - 1) + [1] + [0] * j for j in xrange(i + 1)]
 				
-				aux = Matrix(firstRows + lastRows)
-				auxs.append(aux)
+		# 		aux = Matrix(firstRows + lastRows)
+		# 		auxs.append(aux)
 
-				result = Matrix.product(aux, result)
+		# 		result = Matrix.product(aux, result)
+
+		else:
+			raise ArgumentException
 
 		result.triangularization = triangularization
-		print 'trian: ' + str(result.triangularization)
 		return result, auxs
 
-	def solveTriangularized(self):
+	def solveTriangularized(self, systemResult):
 		if self.triangularization == None:
 			raise Matrix.NotTriangularizedException;
 
@@ -102,13 +111,13 @@ class Matrix:
 		for i in xrange(len(self.data) - 1, -1, -1):
 			#print 'Current: ' + str(i)
 
-			value = self.data[i][len(self.data)]
+			value = systemResult.data[i][0]
 			#print '\tvalue: ' + str(value)
 			
 			for j in xrange(i + 1, len(self.data)):
 				#print '\t\tCalc for ' + str(j)
 				
-				value = value - (vec[j] * self.data[i][j])
+				value -= vec[j] * self.data[i][j]
 				#print '\t\tvalue: ' + str(value)
 
 			vec[i] = value / self.data[i][i]
@@ -174,34 +183,45 @@ class Matrix:
 
 if __name__ == "__main__":
 	n = int(raw_input())
-	matrix = [0] * n
-
-	for i in xrange(n):
-	 	matrix[i] = [float(x) for x in raw_input().split()]
-
-	matrix = Matrix(matrix)
-
-	result, auxs = matrix.trangularize(Matrix.Superior)
-	auxsMult = auxs[0]
-
-	for i in xrange(1, len(auxs)):
-		auxsMult = Matrix.product(auxs[i], auxsMult)
-
-	vec = result.solveTriangularized()
+	matrix = Matrix([[float(x) for x in raw_input().split()] for i in xrange(n)])
 
 	print "Matrix:"
 	matrix.display('\t')
-	print "\nResult"
-	result.display('\t')
-	print "\nP:"
-	auxsMult.display('\t')
-	print "\nP x Matrix = Result:"
-	Matrix.product(auxsMult, matrix).display('\t')
-	print '\nVars:'
-	print vec
+	
+	cmd = raw_input()
+	while cmd != '0':
+		if cmd == 'solve':
+			print '\n~~ SOLVE'
+			result, auxs = matrix.trangularize()
 
-	print '\nCholesk - L*L^-1:'
-	choleskResult = matrix.cholesk()
-	Matrix.product(choleskResult, choleskResult.inverse()).display('\t')
+			auxsMult = auxs[0]
+			for i in xrange(1, len(auxs)):
+				auxsMult = Matrix.product(auxs[i], auxsMult)
 
-	print '\nDet: ' + str(choleskResult.det() ** 2)
+			systemResult = Matrix([[float(x)] for x in raw_input().split()])
+			vec = result.solveTriangularized(Matrix.product(auxsMult, systemResult))
+
+			print '\nSystem result:'
+			systemResult.display('\t')
+			print "\nResult"
+			result.display('\t')
+			print "\nP:"
+			auxsMult.display('\t')
+			print "\nP x Matrix = Result:"
+			Matrix.product(auxsMult, matrix).display('\t')
+			print '\nVars: ' + str(vec)
+		
+		elif cmd == 'cholesk':
+			print '\n~~ CHOLESK'
+			choleskResult = matrix.cholesk()
+
+			print '\nCholesk - L:'
+			choleskResult.display('\t')
+			print '\nCholesk - L*L^-1:'
+			Matrix.product(choleskResult, choleskResult.inverse()).display('\t')
+			print '\nDet: ' + str(choleskResult.det() ** 2)
+
+		else:
+			print 'Unknown command "' + cmd + '"'
+
+		cmd = raw_input()
